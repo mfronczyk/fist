@@ -46,5 +46,5 @@
   :plugins
   [[lein-ring "0.8.7"] [lein-cljsbuild "0.3.3"]]
   :description
-  "FIXME: write description"
+  "A simple web app to track FIFA matches statistics."
   :min-lein-version "2.0.0")
