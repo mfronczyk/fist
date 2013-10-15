@@ -9,3 +9,5 @@ pom.xml
 *.log
 /.lein-*
 /.env
+.idea/workspace.xml
+.idea/tasks.xml
