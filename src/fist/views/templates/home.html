@@ -1,14 +1,54 @@
 {% extends "fist/views/templates/base.html" %}
 {% block content %}
- <div class="jumbotron">
-    <h1>Welcome to fist</h1>
-    <p>Time to start building your site!</p>
-    <p><a class="btn btn-primary btn-large" href="http://luminusweb.net">Learn more &raquo;</a></p>
- </div>
-
- <div class="row-fluid">
-    <div class="span8">
-    {{content|safe}}
-    </div>
- </div>
+ <form action="/" method="post" role="form">
+     <h3>Home</h3>
+     <div class="row">
+         <div class="col-md-4 form-group">
+             <label for="homePlayer">Player</label>
+             <select id="homePlayer" name="home_player_id" class="form-control">
+                 <option selected disabled hidden value=""></option>"
+                 <option value="1">Michal Fronczyk</option>
+                 <option value="2">Filip Korski</option>
+             </select>
+         </div>
+         <div class="col-md-4 form-group">
+             <label for="homeTeam">Team</label>
+             <input id="homeTeam" class="form-control" name="home_team_name" type="text" list="teams" placeholder="Real Madrid">
+         </div>
+         <div class="col-md-4 form group">
+             <label for="homeScore">Score</label>
+             <select id="homeScore" class="form-control" name="home_score">
+                 <option value="0">0</option>
+                 <option value="1">1</option>
+             </select>
+         </div>
+     </div>
+     <h3>Away</h3>
+     <div class="row">
+         <div class="col-md-4 form-group">
+             <label for="awayPlayer">Player</label>
+             <select id="awayPlayer" name="away_player_id" class="form-control">
+                 <option selected disabled hidden value=""></option>"
+                 <option value="1">Michal Fronczyk</option>
+                 <option value="2">Filip Korski</option>
+             </select>
+         </div>
+         <div class="col-md-4 form-group">
+             <label for="awayTeam">Team</label>
+             <input id="awayTeam" class="form-control" name="away_team_name" type="text" list="teams" placeholder="FC Barcelona">
+         </div>
+         <div class="col-md-4 form-group">
+             <label for="awayScore">Score</label>
+             <select id="awayScore" name="away_score" class="form-control">
+                 <option value="0">0</option>
+                 <option value="1">1</option>
+             </select>
+         </div>
+     </div>
+     <button type="submit" class="btn btn-primary">Submit</button>
+     <datalist id="teams">
+         <option value="Real Madrid">
+         <option value="FC Barcelona">
+     </datalist>
+  </form>
 {% endblock %}
