@@ -35,6 +35,14 @@
   {:handler fist.handler/war-handler,
    :init fist.handler/init,
    :destroy fist.handler/destroy}
+  :clj-sql-up
+  {:database
+   {:classname "org.postgresql.Driver"
+    :subprotocol "postgresql"
+    :subname "//localhost:5432/fist"
+    :user "postgres"
+    :password "postgres"}
+   :deps [[postgresql/postgresql "9.1-901.jdbc4"]]}
   :profiles
   {:production
    {:ring
@@ -44,7 +52,7 @@
   :url
   "http://example.com/FIXME"
   :plugins
-  [[lein-ring "0.8.7"] [lein-cljsbuild "0.3.3"]]
+  [[lein-ring "0.8.7"] [lein-cljsbuild "0.3.3"] [clj-sql-up "0.2.0"]]
   :description
   "A simple web app to track FIFA matches statistics."
   :min-lein-version "2.0.0")
