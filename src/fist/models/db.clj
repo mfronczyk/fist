@@ -5,20 +5,31 @@
 
 (defdb db schema/db-spec)
 
-(defentity users)
+(declare players teams matches)
 
-(defn create-user [user]
-  (insert users
-          (values user)))
+(defentity players
+  (has-many matches))
 
-(defn update-user [id first-name last-name email]
-  (update users
-  (set-fields {:first_name first-name
-               :last_name last-name
-               :email email})
-  (where {:id id})))
+(defentity teams
+  (has-many matches))
 
-(defn get-user [id]
-  (first (select users
+(defentity matches
+  (belongs-to players)
+  (belongs-to teams))
+
+(defn create-player [player]
+  (insert players
+    (values player)))
+
+(defn create-team [team]
+  (insert teams
+    (values team)))
+
+(defn create-match [match]
+  (insert matches
+    (values match)))
+
+(defn get-player [id]
+  (first (select players
                  (where {:id id})
                  (limit 1))))
