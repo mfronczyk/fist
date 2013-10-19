@@ -1,7 +1,8 @@
 (ns fist.models.db
   (:use korma.core
         [korma.db :only (defdb)])
-  (:require [fist.models.schema :as schema]))
+  (:require [fist.models.schema :as schema]
+            [taoensso.timbre :as timbre]))
 
 (defdb db schema/db-spec)
 
@@ -31,5 +32,12 @@
 
 (defn get-player [id]
   (first (select players
-                 (where {:id id})
-                 (limit 1))))
+           (where {:id id})
+           (limit 1))))
+
+(defn get-team-by-name [name]
+  (first (select teams
+           (where {:name name})
+           (limit 1))))
+
+

@@ -23,7 +23,8 @@
    [org.clojure/clojurescript "0.0-1896"]
    [domina "1.0.1"]
    [prismatic/dommy "0.1.1"]
-   [cljs-ajax "0.2.0"]]
+   [cljs-ajax "0.2.0"]
+   [clj-time "0.6.0"]]
   :cljsbuild
   {:builds
    [{:source-paths ["src-cljs"],

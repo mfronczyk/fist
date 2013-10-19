@@ -2,6 +2,8 @@
   (:require [compojure.core :refer [defroutes]]
             [fist.routes.home :refer [home-routes]]
             [noir.util.middleware :as middleware]
+            [ring.middleware.params :as ring-params]
+            [ring.middleware.keyword-params :as ring-keyword-params]
             [compojure.route :as route]
             [taoensso.timbre :as timbre]
             [com.postspectacular.rotor :as rotor]
@@ -40,7 +42,7 @@
  (middleware/app-handler
    [cljs-routes home-routes app-routes]
    :middleware
-   []
+   [ring-params/wrap-params ring-keyword-params/wrap-keyword-params]
    :access-rules
    []
    :formats
