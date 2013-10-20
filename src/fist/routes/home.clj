@@ -8,7 +8,9 @@
             [clj-time.coerce :as time-coerce]
             [formative.core :as f]
             [formative.parse :as fp]
-            [hiccup.page :as page]))
+            [hiccup.page :as page]
+            [korma.db :as korma-db]
+            [noir.response :as response]))
 
 (def match-form
   {:fields [{:name :home_player_id :label "Player" :type :select :datatype :int :class "form-control" :id "homePlayer"
@@ -20,7 +22,8 @@
              :options (fn [] (map #(vector (:id %) (:name %)) (db/get-players))) :placeholder ""}
             {:name :away_team_name :label "Team" :type :text :datatype :str :class "form-control" :id "awayTeam"}
             {:name :away_score :label "Score" :type :select :datatype :int :class "form-control" :id "awayScore"
-             :options (range 10) :placeholder ""}]})
+             :options (range 10) :placeholder ""}]
+   :validations [[:required [:home_player_id :home_team_name :home_score :away_player_id :away_team_name :away_score]]]})
 
 (defn home-page []
   (layout/render
@@ -31,16 +34,22 @@
                  :away-team-input (util/render-form-field :away_team_name match-form)
                  :away-score-select (util/render-form-field :away_score match-form)}))
 
-(defn create-match [match]
-  (let [home-team (db/get-team-by-name (:home_team_name match))
-        away-team (db/get-team-by-name (:away_team_name match))]
-    (db/create-match {:home_player_id (Integer/parseInt (:home_player_id match))
-                      :home_team_id (:id home-team)
-                      :home_score (Integer/parseInt (:home_score match))
-                      :away_player_id (Integer/parseInt (:away_player_id match))
-                      :away_team_id (:id away-team)
-                      :away_score (Integer/parseInt (:away_score match))
-                      :occured_at (time-coerce/to-sql-time (time/now))})))
+(defn create-match [params]
+  (korma-db/transaction
+    (let [match (fp/parse-params match-form params)
+          team1 (db/get-team-by-name (:home_team_name match))
+          home-team-id (if-not team1 (:id (db/create-team {:name (:home_team_name match)})) (:id team1))
+          team2 (db/get-team-by-name (:away_team_name match))
+          away-team-id (if-not team2 (:id (db/create-team {:name (:away_team_name match)})) (:id team2))
+          ]
+      (db/create-match {:home_player_id (:home_player_id match)
+                        :home_team_id home-team-id
+                        :home_score (:home_score match)
+                        :away_player_id (:away_player_id match)
+                        :away_team_id away-team-id
+                        :away_score (:away_score match)
+                        :occured_at (time-coerce/to-sql-time (time/now))})))
+  (response/redirect "/stats"))
 
 
 (defn stats-page []
@@ -48,6 +57,6 @@
 
 (defroutes home-routes
   (GET "/" [] (home-page))
-  (POST "/" {match :params} (create-match match))
+  (POST "/" {params :params} (create-match params))
   (GET "/stats" [] (stats-page)))
 
