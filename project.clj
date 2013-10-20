@@ -4,7 +4,10 @@
   :dependencies
   [[org.clojure/clojure "1.5.1"]
    [lib-noir "0.7.1"]
-   [compojure "1.1.5"]
+   [compojure "1.1.5"
+    :exclusions
+    [org.clojure/tools.macro
+     ring/ring-core]]
    [ring-server "0.3.0"]
    [selmer "0.4.3"]
    [com.taoensso/timbre "2.6.2"]
@@ -20,11 +23,14 @@
      javax.jms/jms
      com.sun.jdmk/jmxtools
      com.sun.jmx/jmxri]]
-   [org.clojure/clojurescript "0.0-1896"]
+   [org.clojure/clojurescript "0.0-1896"
+    :exclusions
+    [org.clojure/tools.reader]]
    [domina "1.0.1"]
    [prismatic/dommy "0.1.1"]
    [cljs-ajax "0.2.0"]
-   [clj-time "0.6.0"]]
+   [clj-time "0.6.0"]
+   [formative "0.8.7"]]
   :cljsbuild
   {:builds
    [{:source-paths ["src-cljs"],
