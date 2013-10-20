@@ -8,3 +8,23 @@ body {
 .error {
     color: red;
 }
+
+/* Hack to prevent zooming in the page on iOS when focus is set to a form field.
+   Probably font size should be set to 16px in Bootstrap.*/
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"], input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+    font-size: 16px !important;
+}
