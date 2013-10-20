@@ -35,6 +35,9 @@
            (where {:id id})
            (limit 1))))
 
+(defn get-players []
+  (select players))
+
 (defn get-team-by-name [name]
   (first (select teams
            (where {:name name})
