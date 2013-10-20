@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: ring-anti-forgery:ring-anti-forgery:0.2.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/ring-anti-forgery/ring-anti-forgery/0.2.1/ring-anti-forgery-0.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
