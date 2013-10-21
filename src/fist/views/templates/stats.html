@@ -1,4 +1,33 @@
 {% extends "fist/views/templates/base.html" %}
 {% block content %}
- <p>Statistics are coming soon...</p>
+ <table class="table table-striped table-condensed">
+     <thead>
+         <tr>
+             <th>Player</th>
+             <th>W</th>
+             <th>D</th>
+             <th>L</th>
+             <th>P</th>
+             <th>Score</th>
+         </tr>
+     </thead>
+     <tbody>
+         <tr>
+             <td>Michał Fronczyk</td>
+             <td>3</td>
+             <td>1</td>
+             <td>0</td>
+             <td>10</td>
+             <td>2.5</td>
+         </tr>
+         <tr>
+             <td>Marek Krzynówek</td>
+             <td>0</td>
+             <td>1</td>
+             <td>3</td>
+             <td>1</td>
+             <td>0.25</td>
+         </tr>
+     </tbody>
+</table>
 {% endblock %}
