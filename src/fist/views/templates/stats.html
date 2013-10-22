@@ -13,24 +13,17 @@
          </tr>
      </thead>
      <tbody>
-         <tr>
-             <td>Michał Fronczyk</td>
-             <td>4</td>
-             <td>3</td>
-             <td>1</td>
-             <td>0</td>
-             <td>10</td>
-             <td>2.5</td>
-         </tr>
-         <tr>
-             <td>Marek Krzynówek</td>
-             <td>4</td>
-             <td>0</td>
-             <td>1</td>
-             <td>3</td>
-             <td>1</td>
-             <td>0.25</td>
-         </tr>
+         {% for p in stats %}
+             <tr>
+                 <td>{{p.name}}</td>
+                 <td>{{p.m}}</td>
+                 <td>{{p.w}}</td>
+                 <td>{{p.d}}</td>
+                 <td>{{p.l}}</td>
+                 <td>{{p.p}}</td>
+                 <td>{{p.s|double-format:3}}</td>
+             </tr>
+         {% endfor %}
      </tbody>
 </table>
 {% endblock %}

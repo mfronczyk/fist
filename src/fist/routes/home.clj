@@ -53,7 +53,8 @@
 
 
 (defn stats-page []
-  (layout/render "stats.html"))
+  (layout/render
+    "stats.html" {:stats (sort #(compare (:s %2) (:s %1)) (map #(assoc (db/get-stats (:id %)) :name (:name %)) (db/get-players)))}))
 
 (defroutes home-routes
   (GET "/" [] (home-page))
