@@ -74,5 +74,9 @@
            (where {:name name})
            (limit 1))))
 
+(defn get-teams []
+  (select teams
+    (order :name)))
+
 
 

@@ -10,9 +10,3 @@
   (->>
     (io/slurp-resource filename)
     (md/md-to-html-string)))
-
-(defn render-field [field]
-  (page/html5 (f/render-field field)))
-
-(defn render-form-field [field-name form]
-  (render-field (first (filter #(= (:name %) field-name) (:fields form)))))

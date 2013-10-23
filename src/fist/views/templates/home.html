@@ -5,41 +5,75 @@
      <div class="row">
          <div class="col-md-4 form-group">
              <label for="homePlayer">Player</label>
-             {{home-player-select|safe}}
+             <select class="form-control" id="homePlayer" name="home_player_id">
+                 <option disabled selected value="">
+                 {% for p in players %}
+                     <option value="{{p.id}}">{{p.name}}</option>
+                 {% endfor %}
+             </select>
          </div>
          <div class="col-md-4 form-group">
              <label for="homeTeam">Team</label>
-             {{home-team-input|safe}}
-             <!--input id="homeTeam" class="form-control" name="home_team_name" type="text" list="teams" placeholder="Real Madrid"-->
+             <input class="form-control" id="homeTeam" name="home_team_name" type="text" value="" autocomplete="off" autocorrect="off">
          </div>
          <div class="col-md-4 form group">
              <label for="homeScore">Score</label>
-             {{home-score-select|safe}}
+             <select class="form-control" id="homeScore" name="home_score">
+                 <option disabled selected value="">
+                 {% for s in scores %}
+                     <option value="{{s}}">{{s}}</option>
+                 {% endfor %}
+             </select>
          </div>
      </div>
      <h3>Away</h3>
      <div class="row">
          <div class="col-md-4 form-group">
              <label for="awayPlayer">Player</label>
-             {{away-player-select|safe}}
+             <select class="form-control" id="awayPlayer" name="away_player_id">
+                 <option disabled selected value="">
+                 {% for p in players %}
+                     <option value="{{p.id}}">{{p.name}}</option>
+                 {% endfor %}
+             </select>
          </div>
          <div class="col-md-4 form-group">
              <label for="awayTeam">Team</label>
-             {{away-team-input|safe}}
-             <!--input id="awayTeam" class="form-control" name="away_team_name" type="text" list="teams" placeholder="FC Barcelona"-->
+             <input class="form-control" id="awayTeam" name="away_team_name" type="text" value="" autocomplete="off" autocorrect="off">
          </div>
          <div class="col-md-4 form-group">
              <label for="awayScore">Score</label>
-             {{away-score-select|safe}}
+             <select class="form-control" id="awayScore" name="away_score">
+                 <option disabled selected value="">
+                 {% for s in scores %}
+                     <option value="{{s}}">{{s}}</option>
+                 {% endfor %}
+             </select>
          </div>
      </div>
      <button type="submit" class="btn btn-primary">Submit</button>
-     <!--datalist id="teams">
-         <option value="Real Madrid">
-         <option value="FC Barcelona">
-     </datalist-->
 
      <!-- Hack to add some space below the submit button on iOS -->
      <p></p>
   </form>
+  <script>
+    $(function() {
+      var availableTeams = [
+        {% for t in teams %}
+          "{{t.name}}",
+        {% endfor %}
+      ];
+
+      $("#homeTeam").autocomplete({
+        source: availableTeams,
+        autoFocus: true,
+        delay: 0
+      });
+      $("#awayTeam").autocomplete({
+        source: availableTeams,
+        autoFocus: true,
+        delay: 0
+      });
+    });
+  </script>
 {% endblock %}
