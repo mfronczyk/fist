@@ -1,14 +1,12 @@
 (ns fist.routes.home
   (:use compojure.core)
   (:require [fist.views.layout :as layout]
-            [fist.util :as util]
             [fist.models.db :as db]
             [taoensso.timbre :as timbre]
             [clj-time.core :as time]
             [clj-time.coerce :as time-coerce]
             [formative.core :as f]
             [formative.parse :as fp]
-            [hiccup.page :as page]
             [korma.db :as korma-db]
             [noir.response :as response]))
 

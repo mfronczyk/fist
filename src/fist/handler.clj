@@ -6,8 +6,7 @@
             [ring.middleware.keyword-params :as ring-keyword-params]
             [compojure.route :as route]
             [taoensso.timbre :as timbre]
-            [com.postspectacular.rotor :as rotor]
-            [fist.routes.cljsexample :refer [cljs-routes]]))
+            [com.postspectacular.rotor :as rotor]))
 
 (defroutes
   app-routes
@@ -40,7 +39,7 @@
 
 (def app
  (middleware/app-handler
-   [cljs-routes home-routes app-routes]
+   [home-routes app-routes]
    :middleware
    [ring-params/wrap-params ring-keyword-params/wrap-keyword-params]
    :access-rules
