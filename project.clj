@@ -1,3 +1,5 @@
+(load-file "environ.clj")
+
 (defproject
   fist
   "0.1.0-SNAPSHOT"
@@ -22,7 +24,8 @@
      com.sun.jdmk/jmxtools
      com.sun.jmx/jmxri]]
    [clj-time "0.6.0"]
-   [formative "0.8.7"]]
+   [formative "0.8.7"]
+   [environ "0.4.0"]]
   :ring
   {:handler fist.handler/war-handler,
    :init fist.handler/init,
@@ -31,20 +34,23 @@
   {:database
    {:classname "org.postgresql.Driver"
     :subprotocol "postgresql"
-    :subname "//localhost:5432/fist"
-    :user "postgres"
-    :password "postgres"}
+    :subname ~(env :db-uri)
+    :user ~(env :db-username)
+    :password ~(env :db-password)}
    :deps [[postgresql/postgresql "9.1-901.jdbc4"]]}
   :profiles
   {:production
    {:ring
     {:open-browser? false, :stacktraces? false, :auto-reload? false}},
    :dev
-    {:dependencies [[ring/ring-devel "1.2.0"]]}}
+    {:dependencies [[ring/ring-devel "1.2.0"]]
+     :env {:db-uri "//localhost:5432/fist"
+           :db-username "postgres"
+           :db-password "postgres"}}}
   :url
   "http://example.com/FIXME"
   :plugins
-  [[lein-ring "0.8.7"] [clj-sql-up "0.2.0"]]
+  [[lein-ring "0.8.7"] [clj-sql-up "0.2.0"] [lein-environ "0.4.0"]]
   :description
   "A simple web app to track FIFA matches statistics."
   :min-lein-version "2.0.0")
