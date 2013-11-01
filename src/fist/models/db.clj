@@ -2,7 +2,8 @@
   (:use korma.core
         [korma.db :only (defdb)])
   (:require [fist.models.schema :as schema]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre]
+            [clj-time.coerce :as time-coerce]))
 
 (defdb db schema/db-spec)
 
@@ -20,13 +21,17 @@
   (insert matches
     (values match)))
 
-(defn get-home-matches [player-id]
+(defn get-home-matches [player-id start-date end-date]
   (select matches
-    (where {:home_player_id player-id})))
+    (where {:home_player_id player-id})
+    (where {:occured_at [>= (time-coerce/to-sql-time start-date)]})
+    (where {:occured_at [<= (time-coerce/to-sql-time end-date)]})))
 
-(defn get-away-matches [player-id]
+(defn get-away-matches [player-id start-date end-date]
   (select matches
-    (where {:away_player_id player-id})))
+    (where {:away_player_id player-id})
+    (where {:occured_at [>= (time-coerce/to-sql-time start-date)]})
+    (where {:occured_at [<= (time-coerce/to-sql-time end-date)]})))
 
 (defn get-player [id]
   (first (select players
@@ -55,11 +60,11 @@
       (< home_score away_score) {:w 1 :d 0 :l 0}
       :else {:w 0 :d 0 :l 0})))
 
-(defn get-stats [player-id]
+(defn get-stats [player-id start-date end-date]
   (let [stats (merge-with
                 +
-                (reduce home-matches-reducer {:w 0 :d 0 :l 0} (get-home-matches player-id))
-                (reduce away-matches-reducer {:w 0 :d 0 :l 0} (get-away-matches player-id)))
+                (reduce home-matches-reducer {:w 0 :d 0 :l 0} (get-home-matches player-id start-date end-date))
+                (reduce away-matches-reducer {:w 0 :d 0 :l 0} (get-away-matches player-id start-date end-date)))
         m (reduce + (vals  stats))
         p (+ (* (:w stats) 3) (:d stats))
         s (if (= m 0) 0 (float(/ p m)))]

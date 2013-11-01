@@ -49,7 +49,10 @@
   (layout/render
     "stats.html" {:stats (sort #(compare (:s %2) (:s %1))
                            (filter #(> (:m %) 0)
-                             (map #(assoc (db/get-stats (:id %)) :name (:name %)) (db/get-players))))}))
+                             (map #(assoc (db/get-stats (:id %)
+                                            (time/first-day-of-the-month (time/now))
+                                            (time/last-day-of-the-month (time/now)))
+                                     :name (:name %)) (db/get-players))))}))
 
 (defroutes home-routes
   (GET "/" [] (home-page))
