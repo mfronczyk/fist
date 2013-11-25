@@ -4,7 +4,6 @@
             [fist.models.db :as db]
             [taoensso.timbre :as timbre]
             [clj-time.core :as time]
-            [clj-time.coerce :as time-coerce]
             [formative.core :as f]
             [formative.parse :as fp]
             [korma.db :as korma-db]
@@ -41,18 +40,14 @@
                         :away_player_id (:away_player_id match)
                         :away_team_id away-team-id
                         :away_score (:away_score match)
-                        :occured_at (time-coerce/to-sql-time (time/now))})))
+                        :occured_at (time/now)})))
   (response/redirect "/stats"))
 
 
 (defn stats-page []
-  (layout/render
-    "stats.html" {:stats (sort #(compare (:s %2) (:s %1))
-                           (filter #(> (:m %) 0)
-                             (map #(assoc (db/get-stats (:id %)
-                                            (time/first-day-of-the-month (time/now))
-                                            (time/last-day-of-the-month (time/now)))
-                                     :name (:name %)) (db/get-players))))}))
+  (let [stats (db/get-all-stats)]
+    (layout/render
+      "stats.html" {:ranking (db/get-ranking stats)})))
 
 (defroutes home-routes
   (GET "/" [] (home-page))

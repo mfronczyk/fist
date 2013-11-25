@@ -8,20 +8,18 @@
              <th>W</th>
              <th>D</th>
              <th>L</th>
-             <th>P</th>
              <th>Score</th>
          </tr>
      </thead>
      <tbody>
-         {% for p in stats %}
+         {% for p in ranking %}
              <tr>
                  <td>{{p.name}}</td>
-                 <td>{{p.m}}</td>
-                 <td>{{p.w}}</td>
-                 <td>{{p.d}}</td>
-                 <td>{{p.l}}</td>
-                 <td>{{p.p}}</td>
-                 <td>{{p.s|double-format:3}}</td>
+                 <td>{{p.stats.m}}</td>
+                 <td>{{p.stats.w}}</td>
+                 <td>{{p.stats.d}}</td>
+                 <td>{{p.stats.l}}</td>
+                 <td>{{p.stats.s|double-format:3}}</td>
              </tr>
          {% endfor %}
      </tbody>

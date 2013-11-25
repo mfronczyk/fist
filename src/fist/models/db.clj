@@ -3,7 +3,8 @@
         [korma.db :only (defdb)])
   (:require [fist.models.schema :as schema]
             [taoensso.timbre :as timbre]
-            [clj-time.coerce :as time-coerce]))
+            [clj-time.coerce :as time-coerce]
+            [clj-time.core :as time]))
 
 (defdb db schema/db-spec)
 
@@ -19,19 +20,29 @@
 
 (defn create-match [match]
   (insert matches
-    (values match)))
+    (values (update-in match [:occured_at] time-coerce/to-sql-time))))
 
-(defn get-home-matches [player-id start-date end-date]
+(defn get-matches [player-id start-date end-date]
   (select matches
-    (where {:home_player_id player-id})
+    (where (or (= :home_player_id player-id)
+             (= :away_player_id player-id)))
     (where {:occured_at [>= (time-coerce/to-sql-time start-date)]})
-    (where {:occured_at [<= (time-coerce/to-sql-time end-date)]})))
+    (where {:occured_at [<= (time-coerce/to-sql-time end-date)]})
+    (order :occured_at)))
 
-(defn get-away-matches [player-id start-date end-date]
-  (select matches
-    (where {:away_player_id player-id})
-    (where {:occured_at [>= (time-coerce/to-sql-time start-date)]})
-    (where {:occured_at [<= (time-coerce/to-sql-time end-date)]})))
+(defn normalize-match [match player-id]
+  (let [home-prefix (if (= (:home_player_id match) player-id) "player" "opponent")
+        away-prefix (if (= (:home_player_id match) player-id) "opponent" "player")]
+    {(keyword (str home-prefix "-player-id")) (:home_player_id match)
+     (keyword (str home-prefix "-team-id")) (:home_team_id match)
+     (keyword (str home-prefix "-score")) (:home_score match)
+     (keyword (str away-prefix "-player-id")) (:away_player_id match)
+     (keyword (str away-prefix "-team-id")) (:away_team_id match)
+     (keyword (str away-prefix "-score")) (:away_score match)
+     :occured-at (:occured_at match)}))
+
+(defn get-normalized-matches [player-id start-date end-date]
+  (map #(normalize-match % player-id) (get-matches player-id start-date end-date)))
 
 (defn get-player [id]
   (first (select players
@@ -42,33 +53,38 @@
   (select players
     (order :name)))
 
-(defn home-matches-reducer [stats {home_score :home_score away_score :away_score}]
-  (merge-with +
-    stats
-    (cond
-      (> home_score away_score) {:w 1 :d 0 :l 0}
-      (= home_score away_score) {:w 0 :d 1 :l 0}
-      (< home_score away_score) {:w 0 :d 0 :l 1}
-      :else {:w 0 :d 0 :l 0})))
-
-(defn away-matches-reducer [stats {home_score :home_score away_score :away_score}]
-  (merge-with +
-    stats
-    (cond
-      (> home_score away_score) {:w 0 :d 0 :l 1}
-      (= home_score away_score) {:w 0 :d 1 :l 0}
-      (< home_score away_score) {:w 1 :d 0 :l 0}
-      :else {:w 0 :d 0 :l 0})))
+(defn match-reducer [stats {player-score :player-score opponent-score :opponent-score :as match}]
+  (conj stats
+    (assoc
+      (merge-with +
+        (last stats)
+        (cond
+          (> player-score opponent-score) {:w 1 :d 0 :l 0}
+          (= player-score opponent-score) {:w 0 :d 1 :l 0}
+          :else {:w 0 :d 0 :l 1}))
+      :match match)))
 
 (defn get-stats [player-id start-date end-date]
-  (let [stats (merge-with
-                +
-                (reduce home-matches-reducer {:w 0 :d 0 :l 0} (get-home-matches player-id start-date end-date))
-                (reduce away-matches-reducer {:w 0 :d 0 :l 0} (get-away-matches player-id start-date end-date)))
-        m (reduce + (vals  stats))
-        p (+ (* (:w stats) 3) (:d stats))
-        s (if (= m 0) 0 (float(/ p m)))]
-    (assoc stats :m m :p p :s s)))
+  (map
+    #(let [m (+ (:w %) (:d %) (:l %))]
+        (assoc %
+          :m m
+          :s (float (/ (+ (* (:w %) 3) (:d %)) m))))
+    (reduce match-reducer [] (get-normalized-matches player-id start-date end-date))))
+
+(defn get-all-stats []
+  (filter #(> (count (:stats %)) 0)
+    (map
+      #(identity {
+         :name (:name %)
+         :stats (get-stats
+                  (:id %)
+                  (time/first-day-of-the-month (time/now))
+                  (time/last-day-of-the-month (time/now)))})
+      (get-players))))
+
+(defn get-ranking [stats]
+  (sort #(compare (:s (:stats %2)) (:s (:stats %1))) (map #(update-in % [:stats] last) stats)))
 
 (defn create-team [team]
   (insert teams
@@ -82,6 +98,3 @@
 (defn get-teams []
   (select teams
     (order :name)))
-
-
-
