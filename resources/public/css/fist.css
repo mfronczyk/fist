@@ -9,6 +9,12 @@ body {
     color: red;
 }
 
+.score-over-time {
+    min-width: 310px;
+    height: 400px;
+    margin: 0 auto;
+}
+
 /* Hack to prevent zooming in the page on iOS when focus is set to a form field.
    Probably font size should be set to 16px in Bootstrap.*/
 select,
