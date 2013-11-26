@@ -47,7 +47,8 @@
 (defn stats-page []
   (let [stats (db/get-all-stats)]
     (layout/render
-      "stats.html" {:ranking (db/get-ranking stats)})))
+      "stats.html" {:ranking (db/get-ranking stats)
+                    :stats stats})))
 
 (defroutes home-routes
   (GET "/" [] (home-page))
