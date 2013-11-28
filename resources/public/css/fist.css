@@ -12,7 +12,13 @@ body {
 .score-over-time {
     min-width: 310px;
     height: 600px;
-    margin: 0 auto;
+    margin: 30px auto;
+}
+
+.matches-distribution {
+    min-width: 310px;
+    height: 600px;
+    margin: 30px auto;
 }
 
 /* Hack to prevent zooming in the page on iOS when focus is set to a form field.

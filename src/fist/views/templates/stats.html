@@ -25,7 +25,9 @@
      </tbody>
  </table>
 
- <div id="scoreOverTime" class="score-over-time"></div>
+ <div id="scoreOverTime" class="score-over-time row"></div>
+
+ <div id="matchesDistribution" class="matches-distribution row"></div>
 
  <script>
      $(function () {
@@ -69,6 +71,47 @@
              },
            {% endfor %}
          ]
+       });
+
+       $('#matchesDistribution').highcharts({
+         chart: {
+           type: 'bubble'
+         },
+
+         title: {
+           text: 'Between players'
+         },
+
+         xAxis: {
+           categories: ['Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski']
+         },
+
+         yAxis: {
+           categories: ['Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski']
+         },
+
+         series: [{
+           data: [
+             {x: 0,
+              y: 0,
+              z: 60,
+              color: "#FFFF00"
+             },
+             [0, 1, 10],
+             [1, 0, 73],
+             [1, 1, 14],
+             [2, 2, 63],
+             [3, 3, 89],
+             [4, 4, 73],
+             [5, 5, 14],
+             [6, 6, 63],
+             [7, 7, 89],
+             [8, 8, 73],
+           ],
+           marker: {
+             fillOpacity:0.8
+           }
+         }]
        });
      });
  </script>
