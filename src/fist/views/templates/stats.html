@@ -14,7 +14,7 @@
      <tbody>
          {% for p in ranking %}
              <tr>
-                 <td>{{p.name}}</td>
+                 <td>{{p.player.name}}</td>
                  <td>{{p.stats.m}}</td>
                  <td>{{p.stats.w}}</td>
                  <td>{{p.stats.d}}</td>
@@ -62,7 +62,7 @@
          series: [
            {% for p in stats %}
              {
-               name: "{{p.name}}",
+               name: "{{p.player.name}}",
                data: [
                  {% for e in p.stats %}
                    [new Date("{{e.match.occured-at|date:shortDateTime}}").valueOf(), {{e.s}}],
@@ -79,37 +79,75 @@
          },
 
          title: {
-           text: 'Between players'
+           text: 'Between players',
+           margin: 25
+         },
+
+         legend: {
+           enabled: false
+         },
+
+         tooltip: {
+           enabled: false
+         },
+
+         plotOptions: {
+           bubble: {
+             maxSize: "9%",
+             marker: {
+               states: {
+                 hover: {
+                   enabled: false
+                 }
+               }
+             }
+           }
          },
 
          xAxis: {
-           categories: ['Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski']
+           categories: [
+             {% for p in between-players-stats %}
+               "{{p.player.name}}",
+             {% endfor %}
+           ],
+           endOnTick: false,
+           startOnTick: false,
+           title: {
+             text: "Player",
+             style: {
+               fontSize: "20px"
+             }
+           }
          },
 
          yAxis: {
-           categories: ['Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski', 'Michał Fronczyk', 'Marek Krzynówek', 'Janusz Mordarski']
+           categories: [
+             {% for p in between-players-stats %}
+               "{{p.player.name}}",
+             {% endfor %}
+           ],
+           endOnTick: false,
+           startOnTick: false,
+           title: {
+             text: "Opponent"
+           }
          },
 
          series: [{
            data: [
-             {x: 0,
-              y: 0,
-              z: 60,
-              color: "#FFFF00"
-             },
-             [0, 1, 10],
-             [1, 0, 73],
-             [1, 1, 14],
-             [2, 2, 63],
-             [3, 3, 89],
-             [4, 4, 73],
-             [5, 5, 14],
-             [6, 6, 63],
-             [7, 7, 89],
-             [8, 8, 73],
+             {% for p in between-players-stats %}
+               {% for o,s in p.stats %}
+                 {
+                   x: {{p.player.idx}},
+                   y: {{o.idx}},
+                   z: {{s.f}},
+                   color: "{{s.color}}"
+                 },
+               {% endfor %}
+             {% endfor %}
            ],
            marker: {
-             fillOpacity:0.8
+             fillOpacity:1.0
            }
          }]
        });

@@ -45,10 +45,11 @@
 
 
 (defn stats-page []
-  (let [stats (db/get-all-stats)]
+  (let [stats (db/get-all-stats db/get-stats)]
     (layout/render
       "stats.html" {:ranking (db/get-ranking stats)
-                    :stats stats})))
+                    :stats stats
+                    :between-players-stats (db/get-all-between-players-stats)})))
 
 (defroutes home-routes
   (GET "/" [] (home-page))

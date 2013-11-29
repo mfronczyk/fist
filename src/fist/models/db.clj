@@ -53,15 +53,62 @@
   (select players
     (order :name)))
 
-(defn match-reducer [stats {player-score :player-score opponent-score :opponent-score :as match}]
+(defn match-result [{player-score :player-score opponent-score :opponent-score}]
+  (cond
+    (> player-score opponent-score) {:w 1 :d 0 :l 0}
+    (= player-score opponent-score) {:w 0 :d 1 :l 0}
+    :else {:w 0 :d 0 :l 1}))
+
+(defn between-players-reducer [stats match]
+  (merge-with
+    #(merge-with + %1 %2)
+    stats
+    {(:opponent-player-id match) (match-result match)}))
+
+(defn max-matches-between-players [stats]
+  (if (empty? stats) nil (apply max (map #(+ (:w (second %)) (:d (second %)) (:l (second %))) stats))))
+
+(defn get-score-color [score]
+  (let [color (java.awt.Color/getHSBColor (+ (/ 60.0 360) (* score (/ 60.0 360))) 1.0 1.0)]
+    (String/format "#%02x%02x%02x", (to-array [(.getRed color), (.getGreen color), (.getBlue color)]))))
+
+(defn get-between-players-stats [player-id start-date end-date]
+  (let [stats (reduce between-players-reducer {} (get-normalized-matches player-id start-date end-date))
+        max-matches (max-matches-between-players stats)]
+    (into {} (for [[k v] stats] [k (let [m (+ (:w v) (:d v) (:l v))
+                                         s (float (/ (- (:w v) (:l v)) m))]
+                                 (assoc v
+                                   :m m
+                                   :s s
+                                   :color (get-score-color s)
+                                   :f (float (/ m max-matches))))]))))
+
+(defn get-all-stats [stats-fn]
+  (filter #(> (count (:stats %)) 0)
+    (map
+      #(identity {
+                   :player %
+                   :stats (stats-fn
+                            (:id %)
+                            (time/first-day-of-the-month (time/now))
+                            (time/last-day-of-the-month (time/now)))})
+      (get-players))))
+
+(defn get-all-between-players-stats []
+  (let [stats (map-indexed #(assoc-in %2 [:player :idx] %1) (get-all-stats get-between-players-stats))]
+    (map
+      (fn [p]
+        (update-in
+          p
+          [:stats]
+          (fn [s] (into {} (for [[k v] s]
+                      [(:player (first (filterv #(= (:id (:player %)) k) stats))) v])))))
+      stats)))
+
+(defn match-reducer [stats match]
   (conj stats
     (assoc
-      (merge-with +
-        (last stats)
-        (cond
-          (> player-score opponent-score) {:w 1 :d 0 :l 0}
-          (= player-score opponent-score) {:w 0 :d 1 :l 0}
-          :else {:w 0 :d 0 :l 1}))
+      (merge-with + (last stats) (match-result match))
       :match match)))
 
 (defn get-stats [player-id start-date end-date]
@@ -71,17 +118,6 @@
           :m m
           :s (float (/ (+ (* (:w %) 3) (:d %)) m))))
     (reduce match-reducer [] (get-normalized-matches player-id start-date end-date))))
-
-(defn get-all-stats []
-  (filter #(> (count (:stats %)) 0)
-    (map
-      #(identity {
-         :name (:name %)
-         :stats (get-stats
-                  (:id %)
-                  (time/first-day-of-the-month (time/now))
-                  (time/last-day-of-the-month (time/now)))})
-      (get-players))))
 
 (defn get-ranking [stats]
   (sort #(compare (:s (:stats %2)) (:s (:stats %1))) (map #(update-in % [:stats] last) stats)))
