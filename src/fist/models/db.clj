@@ -27,7 +27,7 @@
     (where (or (= :home_player_id player-id)
              (= :away_player_id player-id)))
     (where {:occured_at [>= (time-coerce/to-sql-time start-date)]})
-    (where {:occured_at [<= (time-coerce/to-sql-time end-date)]})
+    (where {:occured_at [< (time-coerce/to-sql-time end-date)]})
     (order :occured_at)))
 
 (defn normalize-match [match player-id]
@@ -91,7 +91,7 @@
                    :stats (stats-fn
                             (:id %)
                             (time/first-day-of-the-month (time/now))
-                            (time/last-day-of-the-month (time/now)))})
+                            (time/plus (time/last-day-of-the-month (time/now)) (time/days 1)))})
       (get-players))))
 
 (defn get-all-between-players-stats []
