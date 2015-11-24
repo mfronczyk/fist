@@ -90,7 +90,7 @@
                    :player %
                    :stats (stats-fn
                             (:id %)
-                            (time/date-time 2013 1 1)
+                            (time/first-day-of-the-month (time/now))
                             (time/plus (time/last-day-of-the-month (time/now)) (time/days 1)))})
       (get-players))))
 
